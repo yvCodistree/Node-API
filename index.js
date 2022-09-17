@@ -38,7 +38,7 @@ app.use((req, res) => {
   });
 });
 
-app.listen(8000, () => {
+app.listen(process.env.PORT, () => {
   console.log("Example app is listening at http://localhost:8000");
 });
 
