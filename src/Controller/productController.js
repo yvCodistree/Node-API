@@ -28,7 +28,7 @@ module.exports.updateProductDetails = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, color, quantity, price, description, category } = req.body;
-    const updateProductData = await productModal.findById(id);
+    const updateProductData = await productModal.findById(id).populate("category","_id name");
     updateProductData.name = name;
     updateProductData.color = color;
     updateProductData.quantity = quantity;
