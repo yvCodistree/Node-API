@@ -28,13 +28,14 @@ module.exports.updateProductDetails = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, color, quantity, price, description, category } = req.body;
-    const updateProductData = await productModal.findById(id).populate("category","_id name");
+    const updateProductData = await productModal.findById(id);
     updateProductData.name = name;
     updateProductData.color = color;
     updateProductData.quantity = quantity;
     updateProductData.price = price;
     updateProductData.description = description;
     updateProductData.category = category;
+    await updateProductData.populate("category", "_id name");
     await updateProductData.save();
     res.status(200).send({
       message: "Record Updated!",
@@ -105,22 +106,21 @@ module.exports.getProduct = async (req, res) => {
     const search = req.query.search || "";
     const category = req.query.category || "";
     const extra = category !== "" ? { category: category } : {};
-    const getProductData = await productModal
-      .paginate(
-        {
-          ...extra,
-          $or: [
-            { name: { $regex: search, $options: "i" } },
-            { color: { $regex: search, $options: "i" } },
-            { description: { $regex: search, $options: "i" } },
-          ],
-        },
-        {
-          populate:"category",
-          page: page,
-          limit: limit,
-        }
-      );
+    const getProductData = await productModal.paginate(
+      {
+        ...extra,
+        $or: [
+          { name: { $regex: search, $options: "i" } },
+          { color: { $regex: search, $options: "i" } },
+          { description: { $regex: search, $options: "i" } },
+        ],
+      },
+      {
+        populate: "category",
+        page: page,
+        limit: limit,
+      }
+    );
     res.status(200).send({
       message: "member record",
       data: getProductData,
