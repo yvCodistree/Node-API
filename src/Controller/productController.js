@@ -67,9 +67,29 @@ module.exports.deleteProductDetails = async (req, res) => {
 
 module.exports.getAllProductDetails = async (req, res) => {
   try {
-    const getAllProductData = await productModal
-      .find()
-      .populate("category", "_id name");
+    const page = req.query.page || 1;
+    const limit = req.query.limit || 10;
+    const search = req.query.search || "";
+    const category = req.query.category || "";
+    const extra = category !== "" ? { category: category } : {};
+    const getAllProductData = await productModal.paginate(
+      {
+        ...extra,
+        $or: [
+          { name: { $regex: search, $options: "i" } },
+          { color: { $regex: search, $options: "i" } },
+          { description: { $regex: search, $options: "i" } },
+        ],
+      },
+      {
+        populate: "category",
+        page: page,
+        limit: limit,
+      }
+    );
+    // const getAllProductData = await productModal
+    //   .find()
+    //   .populate("category", "_id name");
     res.status(200).send({
       message: "Product All Data",
       data: getAllProductData,
