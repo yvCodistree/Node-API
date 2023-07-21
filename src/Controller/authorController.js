@@ -2,7 +2,8 @@ const authorModal = require("../Model/authorModal");
 
 module.exports.getAllAuthors = async (req, res) => {
   try {
-    const getAllAuthorsData = await authorModal.find();
+    const user = req.user;
+    const getAllAuthorsData = await authorModal.find({ user: user._id });
     res.status(200).send({
       message: "Author All Data",
       data: getAllAuthorsData,
@@ -22,6 +23,7 @@ module.exports.createAuthor = async (req, res) => {
       name,
       birthDate,
       country,
+      user: req.user._id,
     });
     await setAuthorData.save();
     res.status(200).send({

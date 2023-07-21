@@ -2,12 +2,30 @@ const bookModal = require("../Model/book");
 
 module.exports.getBooks = async (req, res) => {
   try {
-    const getAllBookData = await bookModal.find().populate("author_id");
+    console.log("req.user", req.user);
+    const page = req.query.page || 1;
+    const limit = req.query.limit || 10;
+    const search = req.query.search || "";
+    const author = req.query.author || "";
+    const extra = author !== "" ? { author_id: author } : {};
+    const getAllBookData = await bookModal.paginate(
+      {
+        ...extra,
+        $or: [{ name: { $regex: search, $options: "i" } }],
+        user: req.user._id,
+      },
+      {
+        populate: "author_id",
+        page: page,
+        limit: limit,
+      }
+    );
     res.status(200).send({
       message: "Book All Data",
       data: getAllBookData,
     });
   } catch (error) {
+    console.log(error);
     res.status(500).send({
       message: "Book Record Not Found",
       error: error,
@@ -32,6 +50,7 @@ module.exports.createBook = async (req, res) => {
       description,
       genre,
       number_of_sales,
+      user: req.user._id,
     });
     await setBookData.save();
     await setBookData.populate("author_id");
@@ -136,7 +155,13 @@ module.exports.getBooksList = async (req, res) => {
           ],
         },
       },
+      {
+        $match: {
+          user: req.user._id,
+        },
+      },
     ]);
+    console.log("getAllBookData", getAllBookData);
     console.log(getAllBookData);
     res.status(200).send({
       message: "Book All Data",

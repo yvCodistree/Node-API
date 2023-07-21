@@ -42,7 +42,10 @@ module.exports.updateBookVld = [
       if (!Mongoose.isValidObjectId(value)) {
         return Promise.reject("param id would be valid");
       }
-      const book = await bookModal.findById(value);
+      const book = await bookModal.findOne({
+        _id: value,
+        user: req.user._id,
+      });
       if (!book) {
         return Promise.reject("book not found with this ID");
       }
@@ -86,7 +89,10 @@ module.exports.deleteBookVld = [
       if (!Mongoose.isValidObjectId(value)) {
         return Promise.reject("param id would be valid");
       }
-      const book = await bookModal.findById(value);
+      const book = await bookModal.findOne({
+        _id: value,
+        user: req.user._id,
+      });
       if (!book) {
         return Promise.reject("book not found with this ID");
       }
@@ -98,21 +104,24 @@ module.exports.deleteBookVld = [
 ];
 
 module.exports.getBookByAuthorVld = [
-    param("id")
-    .not()  
+  param("id")
+    .not()
     .isEmpty()
     .withMessage("Id is required")
     .custom(async (value, { req }) => {
-        if (!Mongoose.isValidObjectId(value)) {
-            return Promise.reject("param id would be valid");
-        }
-        const books = await bookModal.find({author_id: value});
-        if (!books) {
-            return Promise.reject("books not found with this author ID");
-        }
-        req.books = books;
+      if (!Mongoose.isValidObjectId(value)) {
+        return Promise.reject("param id would be valid");
+      }
+      const books = await bookModal.find({
+        author_id: value,
+        user: req.user._id,
+      });
+      if (!books) {
+        return Promise.reject("books not found with this author ID");
+      }
+      req.books = books;
     }),
-    (req, res, next) => {
-        baseValidator(req, res, next);
-    }
-]
+  (req, res, next) => {
+    baseValidator(req, res, next);
+  },
+];

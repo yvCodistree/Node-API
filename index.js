@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const morgan = require("morgan");
 const routev1 = require("./src/Router/v1");
 
 express.application.prefix = express.Router.prefix = function (
@@ -29,6 +30,9 @@ app.get("/", (req, res) => {
     data: [],
   });
 });
+
+// Logger
+app.use(morgan("dev"));
 
 app.prefix("/api/v1", routev1);
 

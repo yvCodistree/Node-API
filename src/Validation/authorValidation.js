@@ -22,7 +22,10 @@ module.exports.updateAuthorVld = [
       if (!Mongoose.isValidObjectId(value)) {
         return Promise.reject("param id would be valid");
       }
-      const author = await authorModal.findById(value);
+      const author = await authorModal.findOne({
+        _id: value,
+        user: req.user._id,
+      });
       if (!author) {
         return Promise.reject("author not found with this ID");
       }
@@ -46,7 +49,10 @@ module.exports.deleteAuthorVld = [
       if (!Mongoose.isValidObjectId(value)) {
         return Promise.reject("param id would be valid");
       }
-      const author = await authorModal.findById(value);
+      const author = await authorModal.findOne({
+        _id: value,
+        user: req.user._id,
+      });
       if (!author) {
         return Promise.reject("author not found with this ID");
       }

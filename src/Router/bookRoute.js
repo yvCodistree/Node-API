@@ -6,6 +6,7 @@ const {
   getBookByAuthor,
   getBooksList,
 } = require("../Controller/bookController");
+const { userAuth } = require("../Middleware/userAuth");
 const {
   createBookVld,
   updateBookVld,
@@ -14,10 +15,15 @@ const {
 } = require("../Validation/bookValidation");
 
 module.exports = (app) => {
-  app.get("/", getBooks);
-  app.post("/create-book", createBookVld, createBook);
-  app.put("/update-book/:id", updateBookVld, updateBook);
-  app.delete("/delete-book/:id", deleteBookVld, deleteBook);
-  app.get("/get-book-by-author/:id", getBookByAuthorVld, getBookByAuthor);
-  app.get("/get-book-list", getBooksList);
+  app.get("/", userAuth, getBooks);
+  app.post("/create-book", userAuth, createBookVld, createBook);
+  app.put("/update-book/:id", userAuth, updateBookVld, updateBook);
+  app.delete("/delete-book/:id", userAuth, deleteBookVld, deleteBook);
+  app.get(
+    "/get-book-by-author/:id",
+    userAuth,
+    getBookByAuthorVld,
+    getBookByAuthor
+  );
+  app.get("/get-book-list", userAuth, getBooksList);
 };

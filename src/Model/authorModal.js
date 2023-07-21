@@ -14,6 +14,11 @@ const authorSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Users",
+      required: true,
+    },
   },
   { timestamps: true, versionKey: false }
 );
